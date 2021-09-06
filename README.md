@@ -59,18 +59,35 @@ You can include them in the workflow between two steps. For example a redis:
 ```
 
 ## Customise deploy
-### Chart.yaml
-The chart file contains apiVersion, the name and the type of the chart, description, namespace where the chart will deployed and the version
-### Values.yaml
- We have one of this file for each environment: dev, stg, eu & na. This file contains 
-### template
-#### Service.yaml
- the templae folder contains kubernetes manifests which can have parameterized values
+### Chart
+The Chart.yaml file is required for a chart. It contains the following fields:
+- ApiVersion: The chart API version 
+- Name: The name of the chart
+- Type: The type of the chart
+- Version: The targeted Helm chart version
+- Namespace: The cluster namespace where the chart will deployed 
+### Values
+Settings that can be parameterized in Kubernetes manifests. In Lwm2mfe application, we have one of this file for each environment: dev, stg, eu & na. This file contains:
+- ReplicaCount: number of replicas for author and public pods, the default is 1
+- Resource Quota: provides constraints that limit aggregate resource consumption per namespace Resource limits describe how many resources, for example, CPU or RAM, a container can use.
+- Resources
+    - **Resource requests** describe how many resources, for example, CPU or RAM a node has to have
+    - **Resource limits** describe how many resources, for example, CPU or RAM, a container can use.
+- Image: container image repository and tag
+- EnvName: The environment name (dev, stg, eu or na)
+### Template
+The most important ingredient of a chart is the templates/ directory. It holds the application’s configuration files that will be deployed to the cluster. The template files fetch deployment information from values.yaml.
+templates/ directory contains 
+#### Configmap
+ConfigMap allows you to decouple an environment-specific configuration from pods and containers. It stores data as key-value pairs that can be consumed in other places. Config map used in this application as a pod volume that is mounted to containers.
+#### Deployment 
+including important parameters such as the replica count, container image and ports, and liveness and readiness probes:
+#### _helpers
 
 
 
 
-
+liveness and readiness: probes that K8S uses to determine if the application is ready to accept requests or needs to be restarted
 
 # Fluent Helm Charts
 
