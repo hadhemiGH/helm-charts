@@ -67,13 +67,13 @@ The Chart.yaml file is required for a chart. It contains the following fields:
 - Version: The targeted Helm chart version
 - Namespace: The cluster namespace where the chart will deployed 
 ### Values
-Settings that can be parameterized in Kubernetes manifests. In Lwm2mfe application, we have one of this file for each environment: dev, stg, eu & na. This file contains:
+Contains the values that need to be used for the parameterized variables in the template for a specific deployment. In Lwm2mfe application, we have one of this file for each environment: dev, stg, eu & na. This file contains:
 - ReplicaCount: number of replicas for author and public pods, the default is 1
 - Resource Quota: provides constraints that limit aggregate resource consumption per namespace Resource limits describe how many resources, for example, CPU or RAM, a container can use.
 - Resources
     - **Resource requests** describe how many resources, for example, CPU or RAM a node has to have
     - **Resource limits** describe how many resources, for example, CPU or RAM, a container can use.
-- Image: container image repository and tag
+- Image: container image repository and tag for lwm2mfe application the docker image will added dynamically when the release script executed  
 - EnvName: The environment name (dev, stg, eu or na)
 ### Template
 The most important ingredient of a chart is the templates/ directory. It holds the application’s configuration files that will be deployed to the cluster. The template files fetch deployment information from values.yaml.
@@ -81,13 +81,18 @@ templates/ directory contains
 #### Configmap
 ConfigMap allows you to decouple an environment-specific configuration from pods and containers. It stores data as key-value pairs that can be consumed in other places. Config map used in this application as a pod volume that is mounted to containers.
 #### Deployment 
-including important parameters such as the replica count, container image and ports, and liveness and readiness probes:
+In templates/deployment.yaml, I have added a new tier label to the deployment’s metadata for more flexibility in deployment and lookup.
+This file includeimportant parameters such as the replica ,selector, container image and ports, liveness and readiness probes:
+
+In addition to our tier label being added to the auto-generated deployment template, we have added:
+- env field inside the containers spec which allows us to add the ConfigMapkey . 
+- volumeMounts: part of a Kubernetes Pod spec that describes how and where a volume is mounted within a container.
+- liveness and readiness: probes that K8S uses to determine if the application is ready to accept requests or needs to be restarted
 #### _helpers
+A place to put template helpers that can be re-used throughout the chart. In this file, we added a common labels such as Component, Application, EnvName and the Name
 
 
 
-
-liveness and readiness: probes that K8S uses to determine if the application is ready to accept requests or needs to be restarted
 
 # Fluent Helm Charts
 
